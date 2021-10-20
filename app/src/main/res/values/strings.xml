@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">65</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="title_for_ContactDetailsFragment">Детали контакта</string>
+    <string name="title_for_ContactListFragment">Список контактов</string>
 </resources>
