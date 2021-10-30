@@ -9,7 +9,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.65">
-        <activity android:name="com.velagissellint.a65.MainActivity">
+        <service
+            android:name=".ContactService"
+            android:enabled="true"
+            android:exported="false"></service>
+
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
