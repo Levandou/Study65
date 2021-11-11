@@ -1,72 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/llAllElements"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
     <LinearLayout
-        android:id="@+id/llAllElements"
+        android:id="@+id/imageAndName"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        xmlns:android="http://schemas.android.com/apk/res/android">
+        android:layout_margin="10dp"
+        android:layout_weight="10"
+        android:orientation="horizontal">
 
-                    <LinearLayout
-                        android:id="@+id/imageAndName"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal"
-                        android:layout_weight="10"
-                        android:layout_margin="10dp">
+        <ImageView
+            android:id="@+id/imvPhoto"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3" />
 
-                        <ImageView
-                       android:id="@+id/imvPhoto"
-                       android:layout_width="0dp"
-                       android:layout_height="match_parent"
-                       android:layout_weight="3" />
-
-                        <TextView
-                        android:id="@+id/tvName"
-                        android:textSize="40dp"
-                        android:text="Сигал Лев"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="4"
-                        android:layout_marginStart="10dp"
-                        android:gravity="center" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/Elements"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="3"
-                        android:orientation="vertical"
-                        android:layout_margin="10dp">
-
-                        <TextView
-                            android:id="@+id/phoneNumber"
-                            android:text="89199176830"
-                            android:textSize="25dp"
-                            android:gravity="center"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="1" />
-
-                        <TextView
-                            android:id="@+id/email"
-                            android:textSize="25dp"
-                            android:gravity="center"
-                            android:text="velagissellint@gmail.com"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="1"
-                            android:layout_marginTop="10dp" />
-
-                        <TextView
-                            android:id="@+id/description"
-                            android:textSize="25dp"
-                            android:text="Хороший работник!"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="5"
-                            android:layout_marginTop="10dp" />
-                    </LinearLayout>
-
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_weight="4"
+            android:gravity="center"
+            android:text="Сигал Лев"
+            android:textSize="40dp" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/Elements"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:layout_weight="3"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/phoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="89199176830"
+            android:textSize="25dp" />
+
+        <TextView
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="velagissellint@gmail.com"
+            android:textSize="25dp" />
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="5"
+            android:text="Хороший работник!"
+            android:textSize="25dp" />
+
+        <Switch
+            android:id="@+id/SwitchBirthday"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3"
+            android:text="Напоминание о дне рождения"
+            android:textSize="25dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/description"
+            tools:ignore="UseSwitchCompatOrMaterialXml"
+            />
+    </LinearLayout>
+
+</LinearLayout>
 

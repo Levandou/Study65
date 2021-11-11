@@ -33,7 +33,7 @@ class ContactListFragment : Fragment() ,DataFromService{
         val contactList = view.findViewById<ConstraintLayout>(R.id.contactList)
         val transaction = activity?.supportFragmentManager?.beginTransaction()
         contactList.setOnClickListener {
-            val contactDetailsFragment = ContactDetailsFragment.newInstance("contact1")
+            val contactDetailsFragment = ContactDetailsFragment.newInstance(1)
             transaction?.let {
                 transaction
                         .addToBackStack(FRAG_CONTACTS_LIST)
