@@ -1,18 +1,22 @@
 package com.velagissellint.a65
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Switch
 import android.widget.CompoundButton
 import android.widget.ImageView
-import android.widget.Switch
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -22,6 +26,8 @@ class ContactDetailsFragment : Fragment(), DataFromService, CompoundButton.OnChe
     private lateinit var contactDetails: DetailedInformationAboutContact
     private var id: Int? = null
     private var service: ContactService.Service? = null
+    private val PERMISSIONS_REQUEST_READ_CONTACTS = 100
+
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private var switchAlarm: Switch? = null
@@ -53,7 +59,13 @@ class ContactDetailsFragment : Fragment(), DataFromService, CompoundButton.OnChe
         super.onViewCreated(view, savedInstanceState)
         switchAlarm = requireView().findViewById(R.id.SwitchBirthday)
         switchAlarm?.setOnCheckedChangeListener(this)
-        service?.getService()?.getContact(contactDetailCallback, 0)
+        val permission =
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS);
+        if (permission == PackageManager.PERMISSION_GRANTED) {
+            id?.let { service?.getService()?.getContact(contactDetailCallback, it) }
+        } else {
+            getPermission()
+        }
     }
 
     private val contactDetailCallback = object : GetContactDetail {
@@ -68,12 +80,7 @@ class ContactDetailsFragment : Fragment(), DataFromService, CompoundButton.OnChe
             val switchNotify = requireView().findViewById<Switch>(R.id.SwitchBirthday)
 
             activity?.runOnUiThread {
-                ivPhoto.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        requireContext(),
-                        contact.imageResource
-                    )
-                )
+                ivPhoto.setImageURI(Uri.parse(contact.imageResource))
                 tvName.text = contact.fullName
                 tvPhoneNumber.text = contact.phoneNumber
                 email.text = contact.email
@@ -84,6 +91,27 @@ class ContactDetailsFragment : Fragment(), DataFromService, CompoundButton.OnChe
                     switchNotify.isChecked = false
                 }
             }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                service?.getService()?.getContact(contactDetailCallback, 0)
+            }
+        } else {
+            getPermission()
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.no_access_to_contacts),
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -148,6 +176,12 @@ class ContactDetailsFragment : Fragment(), DataFromService, CompoundButton.OnChe
     override fun onDestroyView() {
         switchAlarm = null
         super.onDestroyView()
+    }
+
+    fun getPermission(){
+        requestPermissions(
+            arrayOf(Manifest.permission.READ_CONTACTS),
+            PERMISSIONS_REQUEST_READ_CONTACTS)
     }
 
     companion object {
