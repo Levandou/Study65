@@ -9,4 +9,5 @@
     <string name="content_text">\"Сегодня день рождения у \"</string>
     <string name="id_for_channel">channelID</string>
     <string name="name_for_channel">chanel</string>
+    <string name="no_access_to_contacts">Требуется доступ к контактам</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.velagissellint.a65
 
-import java.util.*
+import java.util.Calendar
+import java.util.GregorianCalendar
 
 fun putNextBirthday(calendar: Calendar): Long {
     val calendarNext = calendar as GregorianCalendar

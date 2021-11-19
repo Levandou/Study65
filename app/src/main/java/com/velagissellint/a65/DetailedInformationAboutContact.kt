@@ -1,10 +1,10 @@
 package com.velagissellint.a65
 
-import androidx.annotation.DrawableRes
-import java.util.*
+import java.util.Calendar
+import java.util.GregorianCalendar
 
 data class DetailedInformationAboutContact(
-        @DrawableRes val imageResource: Int = R.drawable.emp,
+        val imageResource: String="" ,
         val fullName: String = "Сигал Левв",
         val phoneNumber: String = "89199176830",
         val email: String = "velagissellint@gmail.com",
