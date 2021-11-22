@@ -3,7 +3,7 @@ package com.velagissellint.a65
 import java.util.Calendar
 import java.util.GregorianCalendar
 
-fun putNextBirthday(calendar: Calendar): Long {
+fun putNextBirthday(calendar: Calendar?): Long {
     val calendarNext = calendar as GregorianCalendar
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
     calendarNext[Calendar.SECOND] = 0
