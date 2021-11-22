@@ -12,32 +12,28 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Switch
 import android.widget.CompoundButton
 import android.widget.ImageView
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import com.velagissellint.a65.data.BroadcastReceiverForNotify
+import com.velagissellint.a65.presentation.ContactDetailsViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
-class ContactDetailsFragment : Fragment(), DataFromService, CompoundButton.OnCheckedChangeListener {
-    private lateinit var contactDetails: DetailedInformationAboutContact
+@AndroidEntryPoint
+class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
+    private val contactDetailsViewModel: ContactDetailsViewModel by viewModels()
     private var id: Int? = null
-    private var service: ContactService.Service? = null
     private val PERMISSIONS_REQUEST_READ_CONTACTS = 100
-
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private var switchAlarm: Switch? = null
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is ContactService.Service) {
-            service = context
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,36 +58,34 @@ class ContactDetailsFragment : Fragment(), DataFromService, CompoundButton.OnChe
         val permission =
             ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS);
         if (permission == PackageManager.PERMISSION_GRANTED) {
-            id?.let { service?.getService()?.getContact(contactDetailCallback, it) }
+            observeViewModel()
         } else {
             getPermission()
         }
     }
 
-    private val contactDetailCallback = object : GetContactDetail {
-        @SuppressLint("UseSwitchCompatOrMaterialCode")
-        override fun onSuccess(contact: DetailedInformationAboutContact) {
-            contactDetails = contact
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    fun observeViewModel() {
+        contactDetailsViewModel.contact.observe(viewLifecycleOwner, {
             val ivPhoto = requireView().findViewById<ImageView>(R.id.imvPhoto)
             val tvName = requireView().findViewById<TextView>(R.id.tvName)
             val tvPhoneNumber = requireView().findViewById<TextView>(R.id.phoneNumber)
             val email = requireView().findViewById<TextView>(R.id.email)
             val description = requireView().findViewById<TextView>(R.id.description)
             val switchNotify = requireView().findViewById<Switch>(R.id.SwitchBirthday)
-
             activity?.runOnUiThread {
-                ivPhoto.setImageURI(Uri.parse(contact.imageResource))
-                tvName.text = contact.fullName
-                tvPhoneNumber.text = contact.phoneNumber
-                email.text = contact.email
-                description.text = contact.description
+                ivPhoto.setImageURI(Uri.parse(it.imageResource))
+                tvName.text = it.fullName
+                tvPhoneNumber.text = it.phoneNumber
+                email.text = it.email
+                description.text = it.description
                 if (isAlarmSet(requireContext())) {
                     switchNotify.isChecked = true
                 } else {
                     switchNotify.isChecked = false
                 }
             }
-        }
+        })
     }
 
     override fun onRequestPermissionsResult(
@@ -103,7 +97,7 @@ class ContactDetailsFragment : Fragment(), DataFromService, CompoundButton.OnChe
 
         if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                service?.getService()?.getContact(contactDetailCallback, 0)
+                observeViewModel()
             }
         } else {
             getPermission()
@@ -117,6 +111,7 @@ class ContactDetailsFragment : Fragment(), DataFromService, CompoundButton.OnChe
 
     fun isAlarmSet(context: Context): Boolean {
         val intent = Intent(context, BroadcastReceiverForNotify::class.java)
+
         val alarmIntent = id?.let {
             PendingIntent.getBroadcast(
                 context,
@@ -128,15 +123,11 @@ class ContactDetailsFragment : Fragment(), DataFromService, CompoundButton.OnChe
         return alarmIntent != null
     }
 
-    override fun setData() {
-        service?.getService()?.getContact(contactDetailCallback, 0)
-    }
-
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-        if (isChecked) {
+        if (isChecked){
             val intent = Intent(context, BroadcastReceiverForNotify::class.java)
-            intent.putExtra(FULL_NAME, contactDetails.fullName)
-            intent.putExtra(CONTACT_BIRTHDAY, contactDetails.birthday)
+            intent.putExtra(FULL_NAME, contactDetailsViewModel.contact.value?.fullName)
+            intent.putExtra(CONTACT_BIRTHDAY, contactDetailsViewModel.contact.value?.birthday)
             intent.putExtra(CONTACT_ID, id)
             val alarmIntent = id?.let {
                 PendingIntent.getBroadcast(
@@ -149,7 +140,7 @@ class ContactDetailsFragment : Fragment(), DataFromService, CompoundButton.OnChe
             val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
             alarmManager?.set(
                 AlarmManager.RTC_WAKEUP,
-                putNextBirthday(contactDetails.birthday),
+                putNextBirthday(contactDetailsViewModel.contact.value?.birthday),
                 alarmIntent
             )
         } else {
@@ -168,20 +159,16 @@ class ContactDetailsFragment : Fragment(), DataFromService, CompoundButton.OnChe
         }
     }
 
-    override fun onDetach() {
-        service = null
-        super.onDetach()
-    }
-
     override fun onDestroyView() {
         switchAlarm = null
         super.onDestroyView()
     }
 
-    fun getPermission(){
+    fun getPermission() {
         requestPermissions(
             arrayOf(Manifest.permission.READ_CONTACTS),
-            PERMISSIONS_REQUEST_READ_CONTACTS)
+            PERMISSIONS_REQUEST_READ_CONTACTS
+        )
     }
 
     companion object {
@@ -193,8 +180,4 @@ class ContactDetailsFragment : Fragment(), DataFromService, CompoundButton.OnChe
             arguments = bundleOf(ID_ARG to id)
         }
     }
-}
-
-interface GetContactDetail {
-    fun onSuccess(contact: DetailedInformationAboutContact)
 }

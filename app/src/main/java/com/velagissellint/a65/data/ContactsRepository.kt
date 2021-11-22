@@ -1,14 +1,19 @@
-package com.velagissellint.a65
+package com.velagissellint.a65.data
 
 import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.ContactsContract
+import com.velagissellint.a65.domain.ContactFields
+import com.velagissellint.a65.domain.DetailedInformationAboutContact
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import javax.inject.Inject
 
-class ContactSource {
-    fun getContacts(contentResolver:ContentResolver): List<DetailedInformationAboutContact> {
+class ContactsRepository @Inject constructor (
+    private val contentResolver: ContentResolver
+) {
+    fun getContacts(): List<DetailedInformationAboutContact> {
         val contactList: MutableList<DetailedInformationAboutContact> = mutableListOf()
         val cursor = contentResolver.query(
             ContactsContract.Contacts.CONTENT_URI, null, null, null, null
@@ -30,7 +35,7 @@ class ContactSource {
         return contactList
     }
 
-     fun getField(id: String, contactFields: ContactFields,contentResolver:ContentResolver): String {
+     fun getField(id: String, contactFields: ContactFields, contentResolver:ContentResolver): String {
         var meaning: String? =""
         val uri: Uri
         val selection: String
@@ -91,7 +96,7 @@ class ContactSource {
     }
 
     @SuppressLint("SimpleDateFormat")
-    private fun formatterOfBirthday(contentResolver:ContentResolver, id:Int): Calendar {
+    private fun formatterOfBirthday(id:Int): Calendar {
         var birthdayString: String = getField(id = id.toString(), ContactFields.BIRTHDAY,contentResolver)
         birthdayString = birthdayString.dropWhile { it == ']' }
         birthdayString = birthdayString.drop(1)
@@ -115,14 +120,14 @@ class ContactSource {
     }
 
 
-     fun getContact(contentResolver:ContentResolver,id: Int): DetailedInformationAboutContact {
+     fun getContact(id: Int): DetailedInformationAboutContact {
         val detailedInformationAboutContact = DetailedInformationAboutContact(
             getField(id.toString(), ContactFields.IMAGE,contentResolver),
             getName(contentResolver),
             getField(id.toString(), ContactFields.PHONE,contentResolver),
             getField(id.toString(), ContactFields.EMAIL,contentResolver),
             description = getField(id.toString(), ContactFields.DESCRIPTION,contentResolver),
-            formatterOfBirthday(contentResolver,id)
+            formatterOfBirthday(id)
         )
         return detailedInformationAboutContact
     }
