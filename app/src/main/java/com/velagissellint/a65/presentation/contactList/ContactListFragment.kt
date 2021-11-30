@@ -1,31 +1,38 @@
-package com.velagissellint.a65
+package com.velagissellint.a65.presentation.contactList
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.velagissellint.a65.presentation.ContactListViewModel
+import androidx.recyclerview.widget.RecyclerView
+import com.velagissellint.a65.R
+import com.velagissellint.a65.domain.DetailedInformationAboutContact
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ContactListFragment : Fragment(){
+class ContactListFragment : Fragment() {
     private val contactListViewModel: ContactListViewModel by viewModels()
+    private lateinit var adapter: ContactListAdapter
+    private var contactListRecyclerView: RecyclerView? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         (activity as AppCompatActivity?)?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
         return inflater.inflate(R.layout.fragment_contact_list, container, false)
     }
@@ -33,18 +40,7 @@ class ContactListFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activity?.title = getString(R.string.title_for_ContactListFragment)
-        val contactList = view.findViewById<ConstraintLayout>(R.id.contactList)
-        val transaction = activity?.supportFragmentManager?.beginTransaction()
-        contactList.setOnClickListener {
-            val contactDetailsFragment = ContactDetailsFragment.newInstance(1)
-            transaction?.let {
-                transaction
-                    .addToBackStack(FRAG_CONTACTS_LIST)
-                    .replace(R.id.fragment_container, contactDetailsFragment)
-                    .commit()
-            }
-        }
-
+        setupRecyclerView(view)
         val permission =
             ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS);
         if (permission == PackageManager.PERMISSION_GRANTED) {
@@ -56,15 +52,16 @@ class ContactListFragment : Fragment(){
 
     fun observeViewModel() {
         contactListViewModel.contactList.observe(viewLifecycleOwner, {
-            val ivPhoto = requireView().findViewById<ImageView>(R.id.ivPhoto)
-            activity?.runOnUiThread {
-                ivPhoto.setImageURI(Uri.parse(it[0].imageResource))
-                val tvName = requireView().findViewById<TextView>(R.id.tvName)
-                val tvPhoneNumber = requireView().findViewById<TextView>(R.id.tvPhoneNumber)
-                tvName.text = it[0].fullName
-                tvPhoneNumber.text = it[0].phoneNumber
-            }
+            adapter.submitList(it)
         })
+    }
+
+    @SuppressLint("UseRequireInsteadOfGet")
+    fun setupRecyclerView(view: View) {
+        val rvContactList = view.findViewById<RecyclerView>(R.id.rv_pokemon_list)
+        rvContactList.addItemDecoration(DividerItemDecoration(activity!!.applicationContext))
+        adapter = ContactListAdapter(activity?.supportFragmentManager?.beginTransaction())
+        rvContactList.adapter = adapter
     }
 
     override fun onRequestPermissionsResult(
@@ -91,8 +88,43 @@ class ContactListFragment : Fragment(){
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.search_menu, menu)
+        val searchItem: MenuItem = menu.findItem(R.id.actionSearch)
+        val searchView: SearchView = searchItem.getActionView() as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean = false
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { filter(it) }
+                return false
+            }
+        })
+    }
+
+    private fun filter(text: String) {
+        val filteredlist: MutableList<DetailedInformationAboutContact> = mutableListOf()
+
+        for (item in contactListViewModel.contactList.value!!) {
+            if (item.fullName.toLowerCase().contains(text.toLowerCase())) {
+                filteredlist.add(item)
+            }
+        }
+        if (filteredlist.isEmpty()) {
+            Toast.makeText(requireContext(), "Данные не найдены", Toast.LENGTH_SHORT).show()
+        } else {
+            adapter.submitList(filteredlist)
+        }
+    }
+
+    class ItemDecorator : RecyclerView.ItemDecoration() {
+
+    }
+
     companion object {
         private const val FRAG_CONTACTS_LIST = "fragContactsList"
         const val READ_CONTACTS = 100
     }
 }
+

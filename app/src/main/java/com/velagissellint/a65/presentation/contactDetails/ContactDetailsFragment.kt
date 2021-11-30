@@ -1,4 +1,4 @@
-package com.velagissellint.a65
+package com.velagissellint.a65.presentation.contactDetails
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -22,13 +22,15 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.velagissellint.a65.R
 import com.velagissellint.a65.data.BroadcastReceiverForNotify
-import com.velagissellint.a65.presentation.ContactDetailsViewModel
+import com.velagissellint.a65.putNextBirthday
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
     private val contactDetailsViewModel: ContactDetailsViewModel by viewModels()
+
     private var id: Int? = null
     private val PERMISSIONS_REQUEST_READ_CONTACTS = 100
 
@@ -53,6 +55,7 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        contactDetailsViewModel.getContact(id!! + 1)
         switchAlarm = requireView().findViewById(R.id.SwitchBirthday)
         switchAlarm?.setOnCheckedChangeListener(this)
         val permission =
@@ -73,16 +76,14 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
             val email = requireView().findViewById<TextView>(R.id.email)
             val description = requireView().findViewById<TextView>(R.id.description)
             val switchNotify = requireView().findViewById<Switch>(R.id.SwitchBirthday)
-            activity?.runOnUiThread {
-                ivPhoto.setImageURI(Uri.parse(it.imageResource))
-                tvName.text = it.fullName
-                tvPhoneNumber.text = it.phoneNumber
-                email.text = it.email
-                description.text = it.description
-                if (isAlarmSet(requireContext())) {
-                    switchNotify.isChecked = true
-                } else {
-                    switchNotify.isChecked = false
+            it?.let {
+                activity?.runOnUiThread {
+                    ivPhoto.setImageURI(Uri.parse(it.imageResource))
+                    tvName.text = it.fullName
+                    tvPhoneNumber.text = it.phoneNumber
+                    email.text = it.email
+                    description.text = it.description
+                    switchNotify.isChecked = isAlarmSet(requireContext())
                 }
             }
         })
@@ -124,7 +125,7 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
     }
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-        if (isChecked){
+        if (isChecked) {
             val intent = Intent(context, BroadcastReceiverForNotify::class.java)
             intent.putExtra(FULL_NAME, contactDetailsViewModel.contact.value?.fullName)
             intent.putExtra(CONTACT_BIRTHDAY, contactDetailsViewModel.contact.value?.birthday)

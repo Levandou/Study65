@@ -1,4 +1,4 @@
-package com.velagissellint.a65.presentation
+package com.velagissellint.a65.presentation.contactList
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,13 +12,12 @@ import javax.inject.Inject
 class ContactListViewModel @Inject constructor(
     private val contactsRepository: ContactsRepository
 ) : ViewModel() {
-    private val mutableContactList  = MutableLiveData<List<DetailedInformationAboutContact>>()
+    private val mutableContactList = MutableLiveData<List<DetailedInformationAboutContact>>()
     var contactList = mutableContactList as LiveData<List<DetailedInformationAboutContact>>
 
-   private fun getContacts() {
+    private fun getContacts() {
         val listDetailedInformationAboutContact = contactsRepository.getContacts()
         mutableContactList.value = listDetailedInformationAboutContact
-        contactList=mutableContactList
     }
 
     init {

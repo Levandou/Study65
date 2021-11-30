@@ -12,7 +12,7 @@ import android.graphics.Color
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.velagissellint.a65.ContactDetailsFragment
+import com.velagissellint.a65.presentation.contactDetails.ContactDetailsFragment
 import com.velagissellint.a65.R
 import com.velagissellint.a65.putNextBirthday
 import java.util.Calendar
