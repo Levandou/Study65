@@ -63,6 +63,7 @@ class ContactsRepository @Inject constructor(
                 selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?"
                 columnData = ContactsContract.CommonDataKinds.Phone.PHOTO_URI
                 selectionArgs = arrayOf(id)
+
             }
 
             ContactFields.PHONE -> {
@@ -118,7 +119,7 @@ class ContactsRepository @Inject constructor(
         return birthday
     }
 
-     private fun removeScoops(birthdayString: String): String {
+    fun removeScoops(birthdayString: String): String {
         birthdayString.dropWhile { it == ']' }
         birthdayString.drop(1)
         return birthdayString
