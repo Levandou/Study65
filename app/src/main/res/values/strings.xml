@@ -10,4 +10,5 @@
     <string name="id_for_channel">channelID</string>
     <string name="name_for_channel">chanel</string>
     <string name="no_access_to_contacts">Требуется доступ к контактам</string>
+    <string name="contact_not_found">Контакт не найден</string>
 </resources>

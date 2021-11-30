@@ -1,4 +1,4 @@
-package com.velagissellint.a65
+package com.velagissellint.a65.presentation.contactDetails
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,13 +23,15 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.velagissellint.a65.R
 import com.velagissellint.a65.data.BroadcastReceiverForNotify
-import com.velagissellint.a65.presentation.ContactDetailsViewModel
+import com.velagissellint.a65.putNextBirthday
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
     private val contactDetailsViewModel: ContactDetailsViewModel by viewModels()
+
     private var id: Int? = null
     private val PERMISSIONS_REQUEST_READ_CONTACTS = 100
 
@@ -40,6 +43,7 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
         arguments?.let {
             id = it.getInt(ID_ARG)
         }
+        Log.d("qwery",id.toString())
     }
 
     override fun onCreateView(
@@ -53,6 +57,7 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+         contactDetailsViewModel.getContact(id)
         switchAlarm = requireView().findViewById(R.id.SwitchBirthday)
         switchAlarm?.setOnCheckedChangeListener(this)
         val permission =
@@ -73,16 +78,14 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
             val email = requireView().findViewById<TextView>(R.id.email)
             val description = requireView().findViewById<TextView>(R.id.description)
             val switchNotify = requireView().findViewById<Switch>(R.id.SwitchBirthday)
-            activity?.runOnUiThread {
-                ivPhoto.setImageURI(Uri.parse(it.imageResource))
-                tvName.text = it.fullName
-                tvPhoneNumber.text = it.phoneNumber
-                email.text = it.email
-                description.text = it.description
-                if (isAlarmSet(requireContext())) {
-                    switchNotify.isChecked = true
-                } else {
-                    switchNotify.isChecked = false
+            it?.let {contact->
+                activity?.runOnUiThread {
+                    ivPhoto.setImageURI(Uri.parse(contact.imageResource))
+                    tvName.text = contact.fullName
+                    tvPhoneNumber.text = contact.phoneNumber
+                    email.text = contact.email
+                    description.text = contact.description
+                    switchNotify.isChecked = isAlarmSet(requireContext())
                 }
             }
         })
@@ -124,7 +127,7 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
     }
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-        if (isChecked){
+        if (isChecked) {
             val intent = Intent(context, BroadcastReceiverForNotify::class.java)
             intent.putExtra(FULL_NAME, contactDetailsViewModel.contact.value?.fullName)
             intent.putExtra(CONTACT_BIRTHDAY, contactDetailsViewModel.contact.value?.birthday)

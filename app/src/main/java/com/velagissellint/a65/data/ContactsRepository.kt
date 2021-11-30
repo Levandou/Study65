@@ -10,9 +10,10 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import javax.inject.Inject
 
-class ContactsRepository @Inject constructor (
+class ContactsRepository @Inject constructor(
     private val contentResolver: ContentResolver
 ) {
+    @SuppressLint("Range")
     fun getContacts(): List<DetailedInformationAboutContact> {
         val contactList: MutableList<DetailedInformationAboutContact> = mutableListOf()
         val cursor = contentResolver.query(
@@ -23,9 +24,17 @@ class ContactsRepository @Inject constructor (
             while (it.moveToNext()) {
                 contactList.add(
                     DetailedInformationAboutContact(
-                        getField(it.getString(it.getColumnIndex(ContactsContract.Contacts._ID)), ContactFields.IMAGE,contentResolver),
+                        getField(
+                            it.getString(it.getColumnIndex(ContactsContract.Contacts._ID)),
+                            ContactFields.IMAGE,
+                            contentResolver
+                        ),
                         fullName = it.getString(it.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)),
-                        phoneNumber = getField(it.getString(it.getColumnIndex(ContactsContract.Contacts._ID)), ContactFields.PHONE,contentResolver),
+                        phoneNumber = getField(
+                            it.getString(it.getColumnIndex(ContactsContract.Contacts._ID)),
+                            ContactFields.PHONE,
+                            contentResolver
+                        ),
                         id = it.getString(it.getColumnIndex(ContactsContract.Contacts._ID))
                             .toInt(),
                     )
@@ -35,8 +44,13 @@ class ContactsRepository @Inject constructor (
         return contactList
     }
 
-     fun getField(id: String, contactFields: ContactFields, contentResolver:ContentResolver): String {
-        var meaning: String? =""
+    @SuppressLint("Range")
+    fun getField(
+        id: String,
+        contactFields: ContactFields,
+        contentResolver: ContentResolver
+    ): String {
+        var meaning: String? = ""
         val uri: Uri
         val selection: String
         val columnData: String
@@ -45,11 +59,10 @@ class ContactsRepository @Inject constructor (
         when (contactFields) {
 
             ContactFields.IMAGE -> {
-               uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
+                uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
                 selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?"
                 columnData = ContactsContract.CommonDataKinds.Phone.PHOTO_URI
                 selectionArgs = arrayOf(id)
-
             }
 
             ContactFields.PHONE -> {
@@ -95,43 +108,35 @@ class ContactsRepository @Inject constructor (
         return meaning.toString()
     }
 
-    @SuppressLint("SimpleDateFormat")
-    private fun formatterOfBirthday(id:Int): Calendar {
-        var birthdayString: String = getField(id = id.toString(), ContactFields.BIRTHDAY,contentResolver)
-        birthdayString = birthdayString.dropWhile { it == ']' }
-        birthdayString = birthdayString.drop(1)
+    fun formatterOfBirthday(id: Int): Calendar {
+        var birthdayString: String =
+            getField(id = id.toString(), ContactFields.BIRTHDAY, contentResolver)
+        birthdayString = removeScoops(birthdayString)
         val birthday = Calendar.getInstance()
-        val dateFormatBirthday = SimpleDateFormat(PATTERN_DATA)
+        val dateFormatBirthday = SimpleDateFormat(ContactsRepository.PATTERN_DATA)
         birthday.time = dateFormatBirthday.parse(birthdayString)
         return birthday
     }
 
-    private fun getName(contentResolver:ContentResolver): String {
-        var name = ""
-        val cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null)
-        cursor?.use {
-            if (it.moveToFirst()) {
-                do {
-                    name = it.getString(it.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY))
-                } while (it.moveToNext())
-            }
-        }
-        return name
+     private fun removeScoops(birthdayString: String): String {
+        birthdayString.dropWhile { it == ']' }
+        birthdayString.drop(1)
+        return birthdayString
     }
 
-
-     fun getContact(id: Int): DetailedInformationAboutContact {
-        val detailedInformationAboutContact = DetailedInformationAboutContact(
-            getField(id.toString(), ContactFields.IMAGE,contentResolver),
-            getName(contentResolver),
-            getField(id.toString(), ContactFields.PHONE,contentResolver),
-            getField(id.toString(), ContactFields.EMAIL,contentResolver),
-            description = getField(id.toString(), ContactFields.DESCRIPTION,contentResolver),
-            formatterOfBirthday(id)
+    fun getContact(id: Int): DetailedInformationAboutContact {
+        val idToGet = id + 1
+        return DetailedInformationAboutContact(
+            getField(idToGet.toString(), ContactFields.IMAGE, contentResolver),
+            getContacts()[id].fullName,
+            getField(idToGet.toString(), ContactFields.PHONE, contentResolver),
+            getField(idToGet.toString(), ContactFields.EMAIL, contentResolver),
+            description = getField(idToGet.toString(), ContactFields.DESCRIPTION, contentResolver),
+            formatterOfBirthday(idToGet)
         )
-        return detailedInformationAboutContact
     }
-    companion object{
-        val PATTERN_DATA="yyyy-MM-dd"
+
+    companion object {
+        val PATTERN_DATA = "yyyy-MM-dd"
     }
 }

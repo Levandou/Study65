@@ -15,10 +15,10 @@ import javax.inject.Singleton
 class Module {
     @Singleton
     @Provides
-    fun getContentResolver(@ApplicationContext appContext: Context)= appContext.contentResolver
+    fun getContentResolver(@ApplicationContext appContext: Context) = appContext.contentResolver
 
     @Singleton
     @Provides
     fun getRepositoryOfContacts(contentResolver: ContentResolver)
-    :ContactsRepository= ContactsRepository(contentResolver)
+            : ContactsRepository = ContactsRepository(contentResolver)
 }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
+import com.velagissellint.a65.presentation.contactList.ContactListFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
