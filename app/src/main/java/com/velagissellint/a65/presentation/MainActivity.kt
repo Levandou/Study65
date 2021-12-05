@@ -1,9 +1,11 @@
 package com.velagissellint.a65
 
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
+import com.google.android.gms.common.GooglePlayServicesUtilLight.isGooglePlayServicesAvailable
 import com.velagissellint.a65.presentation.contactList.ContactListFragment
 import dagger.hilt.android.AndroidEntryPoint
 

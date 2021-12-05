@@ -25,9 +25,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class ContactListFragment : Fragment() {
     private val contactListViewModel: ContactListViewModel by viewModels()
     private lateinit var adapter: ContactListAdapter
-    private var contactListRecyclerView: RecyclerView? = null
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -118,12 +115,7 @@ class ContactListFragment : Fragment() {
         }
     }
 
-    class ItemDecorator : RecyclerView.ItemDecoration() {
-
-    }
-
     companion object {
-        private const val FRAG_CONTACTS_LIST = "fragContactsList"
         const val READ_CONTACTS = 100
     }
 }
