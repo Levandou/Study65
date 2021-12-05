@@ -1,4 +1,4 @@
-package com.velagissellint.a65
+package com.velagissellint.a65.domain
 
 import java.util.Calendar
 import java.util.GregorianCalendar

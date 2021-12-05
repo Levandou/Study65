@@ -1,7 +1,6 @@
 package com.velagissellint.a65
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -15,15 +14,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import com.velagissellint.a65.presentation.ContactListViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
-class ContactListFragment : Fragment(), DataFromService {
-    private var service: ContactService.Service? = null
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is ContactService.Service) {
-            service = context
-        }
-    }
+@AndroidEntryPoint
+class ContactListFragment : Fragment(){
+    private val contactListViewModel: ContactListViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,25 +48,24 @@ class ContactListFragment : Fragment(), DataFromService {
         val permission =
             ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS);
         if (permission == PackageManager.PERMISSION_GRANTED) {
-            service?.getService()?.getContacts(contactListCallback)
+            observeViewModel()
         } else {
             requestPermissions(arrayOf(Manifest.permission.READ_CONTACTS), 100)
         }
     }
 
-    private val contactListCallback = object : GetContactList {
-        override fun onSuccess(list: List<DetailedInformationAboutContact>) {
+    fun observeViewModel() {
+        contactListViewModel.contactList.observe(viewLifecycleOwner, {
             val ivPhoto = requireView().findViewById<ImageView>(R.id.ivPhoto)
-            val tvName = requireView().findViewById<TextView>(R.id.tvName)
-            val tvPhoneNumber = requireView().findViewById<TextView>(R.id.tvPhoneNumber)
             activity?.runOnUiThread {
-                ivPhoto.setImageURI(Uri.parse(list[0].imageResource))
-                tvName.text = list[0].fullName
-                tvPhoneNumber.text = list[0].phoneNumber
+                ivPhoto.setImageURI(Uri.parse(it[0].imageResource))
+                val tvName = requireView().findViewById<TextView>(R.id.tvName)
+                val tvPhoneNumber = requireView().findViewById<TextView>(R.id.tvPhoneNumber)
+                tvName.text = it[0].fullName
+                tvPhoneNumber.text = it[0].phoneNumber
             }
-        }
+        })
     }
-
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -80,11 +76,12 @@ class ContactListFragment : Fragment(), DataFromService {
         when (requestCode) {
             READ_CONTACTS ->
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    service?.getService()?.getContacts(contactListCallback)
+                    observeViewModel()
                 } else {
                     requestPermissions(
                         arrayOf(Manifest.permission.READ_CONTACTS),
-                        READ_CONTACTS)
+                        READ_CONTACTS
+                    )
                     Toast.makeText(
                         requireContext(),
                         getString(R.string.no_access_to_contacts),
@@ -94,21 +91,8 @@ class ContactListFragment : Fragment(), DataFromService {
         }
     }
 
-    override fun onDetach() {
-        service = null
-        super.onDetach()
-    }
-
     companion object {
         private const val FRAG_CONTACTS_LIST = "fragContactsList"
         const val READ_CONTACTS = 100
     }
-
-    override fun setData() {
-        service?.getService()?.getContacts((contactListCallback))
-    }
-}
-
-interface GetContactList {
-    fun onSuccess(list: List<DetailedInformationAboutContact>)
 }

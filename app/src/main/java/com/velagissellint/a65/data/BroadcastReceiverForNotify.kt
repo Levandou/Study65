@@ -1,4 +1,4 @@
-package com.velagissellint.a65
+package com.velagissellint.a65.data
 
 import android.annotation.SuppressLint
 import android.app.AlarmManager
@@ -12,7 +12,10 @@ import android.graphics.Color
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import java.util.*
+import com.velagissellint.a65.ContactDetailsFragment
+import com.velagissellint.a65.R
+import com.velagissellint.a65.putNextBirthday
+import java.util.Calendar
 
 class BroadcastReceiverForNotify : BroadcastReceiver() {
     @SuppressLint("StringFormatInvalid")
