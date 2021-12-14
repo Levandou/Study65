@@ -6,6 +6,7 @@ import android.net.Uri
 import android.provider.ContactsContract
 import com.velagissellint.a65.domain.ContactFields
 import com.velagissellint.a65.domain.DetailedInformationAboutContact
+import io.reactivex.rxjava3.core.Single
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import javax.inject.Inject
@@ -119,22 +120,30 @@ class ContactsRepository @Inject constructor(
         return birthday
     }
 
-    fun removeScoops(birthdayString: String): String {
+    private fun removeScoops(birthdayString: String): String {
         birthdayString.dropWhile { it == ']' }
         birthdayString.drop(1)
         return birthdayString
     }
 
-    fun getContact(id: Int): DetailedInformationAboutContact {
+    fun getContactsSingle()=Single.fromCallable{getContacts()}
+
+    fun getContact(id: Int):Single<DetailedInformationAboutContact> {
         val idToGet = id + 1
-        return DetailedInformationAboutContact(
-            getField(idToGet.toString(), ContactFields.IMAGE, contentResolver),
-            getContacts()[id].fullName,
-            getField(idToGet.toString(), ContactFields.PHONE, contentResolver),
-            getField(idToGet.toString(), ContactFields.EMAIL, contentResolver),
-            description = getField(idToGet.toString(), ContactFields.DESCRIPTION, contentResolver),
-            formatterOfBirthday(idToGet)
-        )
+        return Single.fromCallable {
+            DetailedInformationAboutContact(
+                getField(idToGet.toString(), ContactFields.IMAGE, contentResolver),
+                getContacts()[id].fullName,
+                getField(idToGet.toString(), ContactFields.PHONE, contentResolver),
+                getField(idToGet.toString(), ContactFields.EMAIL, contentResolver),
+                description = getField(
+                    idToGet.toString(),
+                    ContactFields.DESCRIPTION,
+                    contentResolver
+                ),
+                formatterOfBirthday(idToGet)
+            )
+        }
     }
 
     companion object {
