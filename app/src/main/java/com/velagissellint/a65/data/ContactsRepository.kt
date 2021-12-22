@@ -2,14 +2,16 @@ package com.velagissellint.a65.data
 
 import android.annotation.SuppressLint
 import android.content.ContentResolver
+import android.content.Context
 import android.net.Uri
 import android.provider.ContactsContract
+import android.widget.Toast
+import com.velagissellint.a65.R
 import com.velagissellint.a65.domain.ContactFields
 import com.velagissellint.a65.domain.DetailedInformationAboutContact
 import io.reactivex.rxjava3.core.Single
 import java.text.SimpleDateFormat
 import java.util.Calendar
-
 import javax.inject.Inject
 
 class ContactsRepository @Inject constructor(
@@ -148,16 +150,23 @@ class ContactsRepository @Inject constructor(
     }
 
     fun filter(
-        text: String,
+        text: String?,
+        requireContext: Context,
         list: List<DetailedInformationAboutContact>?
     ): MutableList<DetailedInformationAboutContact> {
         val filteredlist = mutableListOf<DetailedInformationAboutContact>()
         if (list != null) {
             for (item in list) {
-                if (item.fullName.toLowerCase().contains(text.toLowerCase()))
+                if (item.fullName.toLowerCase().contains(text!!.toLowerCase()))
                     filteredlist.add(item)
             }
         }
+        if (filteredlist.isEmpty())
+            Toast.makeText(
+                requireContext,
+                requireContext.getString(R.string.contact_not_found),
+                Toast.LENGTH_SHORT
+            ).show()
         return filteredlist
     }
 
