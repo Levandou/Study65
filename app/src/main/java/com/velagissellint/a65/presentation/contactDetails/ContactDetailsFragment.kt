@@ -9,18 +9,19 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.velagissellint.a65.R
@@ -43,7 +44,6 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
         arguments?.let {
             id = it.getInt(ID_ARG)
         }
-        Log.d("qwery",id.toString())
     }
 
     override fun onCreateView(
@@ -57,9 +57,11 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-         contactDetailsViewModel.getContact(id)
+        contactDetailsViewModel.getContact(id)
+        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
         switchAlarm = requireView().findViewById(R.id.SwitchBirthday)
         switchAlarm?.setOnCheckedChangeListener(this)
+        observeProgressBar(progressBar)
         val permission =
             ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS);
         if (permission == PackageManager.PERMISSION_GRANTED) {
@@ -67,6 +69,14 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
         } else {
             getPermission()
         }
+    }
+
+    private fun observeProgressBar(progressBar: ProgressBar) {
+        contactDetailsViewModel
+            .isLoadingPublic
+            .observe(viewLifecycleOwner, {
+                progressBar.isVisible= it
+            })
     }
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
@@ -78,7 +88,7 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
             val email = requireView().findViewById<TextView>(R.id.email)
             val description = requireView().findViewById<TextView>(R.id.description)
             val switchNotify = requireView().findViewById<Switch>(R.id.SwitchBirthday)
-            it?.let {contact->
+            it?.let { contact ->
                 activity?.runOnUiThread {
                     ivPhoto.setImageURI(Uri.parse(contact.imageResource))
                     tvName.text = contact.fullName
@@ -112,7 +122,7 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
         }
     }
 
-    fun isAlarmSet(context: Context): Boolean {
+    private fun isAlarmSet(context: Context): Boolean {
         val intent = Intent(context, BroadcastReceiverForNotify::class.java)
 
         val alarmIntent = id?.let {
@@ -167,7 +177,7 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
         super.onDestroyView()
     }
 
-    fun getPermission() {
+    private fun getPermission() {
         requestPermissions(
             arrayOf(Manifest.permission.READ_CONTACTS),
             PERMISSIONS_REQUEST_READ_CONTACTS
