@@ -1,43 +1,73 @@
 package com.velagissellint.a65.presentation.contactList
 
-import android.content.Context
-import android.widget.Toast
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.velagissellint.a65.R
 import com.velagissellint.a65.data.ContactsRepository
 import com.velagissellint.a65.domain.DetailedInformationAboutContact
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.addTo
+import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
 class ContactListViewModel @Inject constructor(
     private val contactsRepository: ContactsRepository
 ) : ViewModel() {
+    private val disposable: CompositeDisposable = CompositeDisposable()
     private val mutableContactList = MutableLiveData<List<DetailedInformationAboutContact>>()
-    var contactList = mutableContactList as LiveData<List<DetailedInformationAboutContact>>
+    val contactList = mutableContactList as LiveData<List<DetailedInformationAboutContact>>
+    private val isLoading = MutableLiveData<Boolean>()
+    val isLoadingPublic = isLoading as LiveData<Boolean>
+    private val mutableContactListFilter = MutableLiveData<List<DetailedInformationAboutContact>>()
+    val contactListFilter =
+        mutableContactListFilter as LiveData<List<DetailedInformationAboutContact>>
 
     private fun getContacts() {
-        val listDetailedInformationAboutContact = contactsRepository.getContacts()
-        mutableContactList.value = listDetailedInformationAboutContact
+        contactsRepository.getContactsSingle()
+            .subscribeOn(Schedulers.io())
+            .doOnSubscribe { isLoading.postValue(true) }
+            .doFinally { isLoading.postValue(false) }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                mutableContactList.value = it
+            }, {
+                Log.d("ERRORO", it.message.toString())
+            })
+            .addTo(disposable)
+    }
+
+    fun filter(observable: Observable<String>) {
+        observable
+            .debounce(1000, TimeUnit.MILLISECONDS)
+            .distinctUntilChanged()
+            .map { name ->
+                contactsRepository.filter(
+                    name,
+                    mutableContactList.value
+                )
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                mutableContactListFilter.value = it
+            }, {
+                Log.d("ERRORO", it.message.toString())
+            })
+            .addTo(disposable)
     }
 
     init {
         getContacts()
     }
 
-     fun filter(text: String,adapter:ContactListAdapter,requireContext:Context) {
-        val filteredlist: MutableList<DetailedInformationAboutContact> = mutableListOf()
-        for (item in contactList.value!!) {
-            if (item.fullName.toLowerCase().contains(text.toLowerCase())) {
-                filteredlist.add(item)
-            }
-        }
-        if (filteredlist.isEmpty()) {
-            Toast.makeText(requireContext, requireContext.getString(R.string.contact_not_found), Toast.LENGTH_SHORT).show()
-        } else {
-            adapter.submitList(filteredlist)
-        }
+    override fun onCleared() {
+        disposable.dispose()
+        super.onCleared()
     }
 }

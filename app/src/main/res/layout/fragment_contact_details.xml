@@ -1,85 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/llAllElements"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/imageAndName"
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        tools:ignore="MissingConstraints"
+        tools:visibility="visible" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/llAllElements"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="10dp"
-        android:layout_weight="10"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/imvPhoto"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="3" />
-
-        <TextView
-            android:id="@+id/tvName"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="10dp"
-            android:layout_weight="4"
-            android:gravity="center"
-            android:text="Сигал Лев"
-            android:textSize="40dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/Elements"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="10dp"
-        android:layout_weight="3"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/phoneNumber"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="89199176830"
-            android:textSize="25dp" />
 
-        <TextView
-            android:id="@+id/email"
+        <LinearLayout
+            android:id="@+id/imageAndName"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="10dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="velagissellint@gmail.com"
-            android:textSize="25dp" />
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:layout_weight="10"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/description"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="10dp"
-            android:layout_weight="5"
-            android:text="Хороший работник!"
-            android:textSize="25dp" />
+            <ImageView
+                android:id="@+id/imvPhoto"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3" />
 
-        <Switch
-            android:id="@+id/SwitchBirthday"
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:text="Сигал Лев"
+                android:textSize="40dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/Elements"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
             android:layout_weight="3"
-            android:text="Напоминание о дне рождения"
-            android:textSize="25dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/description"
-            tools:ignore="UseSwitchCompatOrMaterialXml"
-            />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/phoneNumber"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="89199176830"
+                android:textSize="25dp" />
+
+            <TextView
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="velagissellint@gmail.com"
+                android:textSize="25dp" />
+
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="5"
+                android:text="Хороший работник!"
+                android:textSize="25dp" />
+
+            <Switch
+                android:id="@+id/SwitchBirthday"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                android:text="Напоминание о дне рождения"
+                android:textSize="25dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/description"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+        </LinearLayout>
+
     </LinearLayout>
 
-</LinearLayout>
-
+</FrameLayout>

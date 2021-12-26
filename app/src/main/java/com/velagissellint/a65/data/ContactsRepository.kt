@@ -6,8 +6,10 @@ import android.net.Uri
 import android.provider.ContactsContract
 import com.velagissellint.a65.domain.ContactFields
 import com.velagissellint.a65.domain.DetailedInformationAboutContact
+import io.reactivex.rxjava3.core.Single
 import java.text.SimpleDateFormat
 import java.util.Calendar
+
 import javax.inject.Inject
 
 class ContactsRepository @Inject constructor(
@@ -63,6 +65,7 @@ class ContactsRepository @Inject constructor(
                 selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?"
                 columnData = ContactsContract.CommonDataKinds.Phone.PHOTO_URI
                 selectionArgs = arrayOf(id)
+
             }
 
             ContactFields.PHONE -> {
@@ -118,22 +121,44 @@ class ContactsRepository @Inject constructor(
         return birthday
     }
 
-     private fun removeScoops(birthdayString: String): String {
+    private fun removeScoops(birthdayString: String): String {
         birthdayString.dropWhile { it == ']' }
         birthdayString.drop(1)
         return birthdayString
     }
 
-    fun getContact(id: Int): DetailedInformationAboutContact {
+    fun getContactsSingle() = Single.fromCallable { getContacts() }
+
+    fun getContact(id: Int): Single<DetailedInformationAboutContact> {
         val idToGet = id + 1
-        return DetailedInformationAboutContact(
-            getField(idToGet.toString(), ContactFields.IMAGE, contentResolver),
-            getContacts()[id].fullName,
-            getField(idToGet.toString(), ContactFields.PHONE, contentResolver),
-            getField(idToGet.toString(), ContactFields.EMAIL, contentResolver),
-            description = getField(idToGet.toString(), ContactFields.DESCRIPTION, contentResolver),
-            formatterOfBirthday(idToGet)
-        )
+        return Single.fromCallable {
+            DetailedInformationAboutContact(
+                getField(idToGet.toString(), ContactFields.IMAGE, contentResolver),
+                getContacts()[id].fullName,
+                getField(idToGet.toString(), ContactFields.PHONE, contentResolver),
+                getField(idToGet.toString(), ContactFields.EMAIL, contentResolver),
+                description = getField(
+                    idToGet.toString(),
+                    ContactFields.DESCRIPTION,
+                    contentResolver
+                ),
+                formatterOfBirthday(idToGet)
+            )
+        }
+    }
+
+    fun filter(
+        text: String,
+        list: List<DetailedInformationAboutContact>?
+    ): MutableList<DetailedInformationAboutContact> {
+        val filteredlist = mutableListOf<DetailedInformationAboutContact>()
+        if (list != null) {
+            for (item in list) {
+                if (item.fullName.toLowerCase().contains(text.toLowerCase()))
+                    filteredlist.add(item)
+            }
+        }
+        return filteredlist
     }
 
     companion object {
