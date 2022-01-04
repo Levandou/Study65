@@ -10,35 +10,50 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.velagissellint.a65.R
-import dagger.hilt.android.AndroidEntryPoint
+import com.velagissellint.a65.applicationComponent
+import com.velagissellint.a65.presentation.ViewModelFactory
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.ObservableEmitter
+import javax.inject.Inject
 
-@AndroidEntryPoint
 class ContactListFragment : Fragment() {
-    private val contactListViewModel: ContactListViewModel by viewModels()
+    @Inject
+    lateinit var factory: ViewModelFactory
+    lateinit var contactListViewModel: ContactListViewModel
+
     private lateinit var adapter: ContactListAdapter
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        setHasOptionsMenu(true)
         (activity as AppCompatActivity?)?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        applicationComponent.plusContactListComponent().inject(this)
+        contactListViewModel =
+            ViewModelProviders.of(this, factory).get(ContactListViewModel::class.java)
         return inflater.inflate(R.layout.fragment_contact_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        progressBar = view.findViewById(R.id.progressBar)
+        setHasOptionsMenu(true)
         activity?.title = getString(R.string.title_for_ContactListFragment)
         setupRecyclerView(view)
+        observeProgressBar(progressBar)
+        observeSearchView()
         val permission =
             ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS);
         if (permission == PackageManager.PERMISSION_GRANTED) {
@@ -48,8 +63,28 @@ class ContactListFragment : Fragment() {
         }
     }
 
-    fun observeViewModel() {
+    private fun observeProgressBar(progressBar: ProgressBar) {
+        contactListViewModel
+            .isLoadingPublic
+            .observe(viewLifecycleOwner, {
+                progressBar.isVisible = it
+            })
+    }
+
+    private fun observeViewModel() {
         contactListViewModel.contactList.observe(viewLifecycleOwner, {
+            adapter.submitList(it)
+        })
+    }
+
+    private fun observeSearchView() {
+        contactListViewModel.contactListFilter.observe(viewLifecycleOwner, {
+            if (it.isEmpty())
+                Toast.makeText(
+                    requireContext(),
+                    requireContext().getString(R.string.contact_not_found),
+                    Toast.LENGTH_LONG
+                ).show()
             adapter.submitList(it)
         })
     }
@@ -62,8 +97,9 @@ class ContactListFragment : Fragment() {
         rvContactList.adapter = adapter
     }
 
-    fun getFragmentTransaction(): FragmentTransaction?{
+    private fun getFragmentTransaction(): FragmentTransaction? {
         return activity?.supportFragmentManager?.beginTransaction()
+
     }
 
     override fun onRequestPermissionsResult(
@@ -93,13 +129,19 @@ class ContactListFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.search_menu, menu)
+        var observable: Observable<String?>
         val searchItem: MenuItem = menu.findItem(R.id.actionSearch)
-        val searchView: SearchView = searchItem.getActionView() as SearchView
+        val searchView: SearchView = searchItem.actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean = false
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                newText?.let { contactListViewModel.filter(it,adapter,requireContext()) }
+                observable = Observable.create { text: ObservableEmitter<String?> ->
+                    text.onNext(
+                        newText
+                    )
+                }
+                contactListViewModel.filter(observable)
                 return false
             }
         })
@@ -109,4 +151,3 @@ class ContactListFragment : Fragment() {
         const val READ_CONTACTS = 100
     }
 }
-

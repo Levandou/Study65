@@ -1,13 +1,12 @@
-package com.velagissellint.a65
+package com.velagissellint.a65.presentation
 
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
+import com.velagissellint.a65.R
 import com.velagissellint.a65.presentation.contactList.ContactListFragment
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
