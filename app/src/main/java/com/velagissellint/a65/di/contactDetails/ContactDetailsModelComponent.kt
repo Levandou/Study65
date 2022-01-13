@@ -1,12 +1,10 @@
 package com.velagissellint.a65.di.contactDetails
 
-import com.velagissellint.a65.di.ContentResolverModule
-import com.velagissellint.a65.di.scopes.ContactsDetailsScope
-import com.velagissellint.a65.presentation.contactDetails.ContactDetailsFragment
+import com.example.libraryy.all.containersDi.ContactDetailsContainer
+import com.velagissellint.a65.ContentResolverModule
+import com.velagissellint.a65.scopes.ContactsDetailsScope
 import dagger.Subcomponent
 
 @ContactsDetailsScope
 @Subcomponent(modules = [ContactDetailsModelModule::class, ContentResolverModule::class])
-interface ContactDetailsModelComponent {
-    fun inject(fragment: ContactDetailsFragment)
-}
+interface ContactDetailsModelComponent: ContactDetailsContainer
