@@ -9,7 +9,6 @@ import com.velagissellint.a65.domain.DetailedInformationAboutContact
 import io.reactivex.rxjava3.core.Single
 import java.text.SimpleDateFormat
 import java.util.Calendar
-
 import javax.inject.Inject
 
 class ContactsRepository @Inject constructor(
@@ -18,6 +17,7 @@ class ContactsRepository @Inject constructor(
     @SuppressLint("Range")
     fun getContacts(): List<DetailedInformationAboutContact> {
         val contactList: MutableList<DetailedInformationAboutContact> = mutableListOf()
+
         val cursor = contentResolver.query(
             ContactsContract.Contacts.CONTENT_URI, null, null, null, null
         )
@@ -148,13 +148,13 @@ class ContactsRepository @Inject constructor(
     }
 
     fun filter(
-        text: String,
+        text: String?,
         list: List<DetailedInformationAboutContact>?
     ): MutableList<DetailedInformationAboutContact> {
         val filteredlist = mutableListOf<DetailedInformationAboutContact>()
         if (list != null) {
             for (item in list) {
-                if (item.fullName.toLowerCase().contains(text.toLowerCase()))
+                if (text?.let { item.fullName.toLowerCase().contains(it.toLowerCase()) } == true)
                     filteredlist.add(item)
             }
         }

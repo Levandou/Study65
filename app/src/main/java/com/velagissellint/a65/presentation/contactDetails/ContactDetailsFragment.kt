@@ -23,15 +23,18 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProviders
 import com.velagissellint.a65.R
+import com.velagissellint.a65.applicationComponent
 import com.velagissellint.a65.data.BroadcastReceiverForNotify
+import com.velagissellint.a65.presentation.ViewModelFactory
 import com.velagissellint.a65.putNextBirthday
-import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-@AndroidEntryPoint
 class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
-    private val contactDetailsViewModel: ContactDetailsViewModel by viewModels()
+    @Inject
+    lateinit var factory: ViewModelFactory
+    lateinit var contactDetailsViewModel: ContactDetailsViewModel
 
     private var id: Int? = null
     private val PERMISSIONS_REQUEST_READ_CONTACTS = 100
@@ -52,12 +55,18 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
     ): View? {
         activity?.title = getString(R.string.title_for_ContactDetailsFragment)
         (activity as AppCompatActivity?)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        applicationComponent.plusContactDetailsComponent().inject(this)
+        contactDetailsViewModel =
+            ViewModelProviders.of(this, factory).get(ContactDetailsViewModel::class.java)
+
         return inflater.inflate(R.layout.fragment_contact_details, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         contactDetailsViewModel.getContact(id)
+
         val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
         switchAlarm = requireView().findViewById(R.id.SwitchBirthday)
         switchAlarm?.setOnCheckedChangeListener(this)
@@ -75,7 +84,7 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
         contactDetailsViewModel
             .isLoadingPublic
             .observe(viewLifecycleOwner, {
-                progressBar.isVisible= it
+                progressBar.isVisible = it
             })
     }
 
@@ -122,6 +131,7 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
         }
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     private fun isAlarmSet(context: Context): Boolean {
         val intent = Intent(context, BroadcastReceiverForNotify::class.java)
 
@@ -136,6 +146,7 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
         return alarmIntent != null
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
         if (isChecked) {
             val intent = Intent(context, BroadcastReceiverForNotify::class.java)

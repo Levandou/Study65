@@ -18,16 +18,20 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.velagissellint.a65.R
-import dagger.hilt.android.AndroidEntryPoint
+import com.velagissellint.a65.applicationComponent
+import com.velagissellint.a65.presentation.ViewModelFactory
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.ObservableEmitter
+import javax.inject.Inject
 
-@AndroidEntryPoint
 class ContactListFragment : Fragment() {
-    private val contactListViewModel: ContactListViewModel by viewModels()
+    @Inject
+    lateinit var factory: ViewModelFactory
+    lateinit var contactListViewModel: ContactListViewModel
+
     private lateinit var adapter: ContactListAdapter
     private lateinit var progressBar: ProgressBar
 
@@ -36,6 +40,9 @@ class ContactListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         (activity as AppCompatActivity?)?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        applicationComponent.plusContactListComponent().inject(this)
+        contactListViewModel =
+            ViewModelProviders.of(this, factory).get(ContactListViewModel::class.java)
         return inflater.inflate(R.layout.fragment_contact_list, container, false)
     }
 
@@ -92,6 +99,7 @@ class ContactListFragment : Fragment() {
 
     private fun getFragmentTransaction(): FragmentTransaction? {
         return activity?.supportFragmentManager?.beginTransaction()
+
     }
 
     override fun onRequestPermissionsResult(
@@ -121,15 +129,18 @@ class ContactListFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.search_menu, menu)
-        var observable: Observable<String>
+        var observable: Observable<String?>
         val searchItem: MenuItem = menu.findItem(R.id.actionSearch)
         val searchView: SearchView = searchItem.actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean = false
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                observable =
-                    Observable.create { text: ObservableEmitter<String> -> text.onNext(newText) }
+                observable = Observable.create { text: ObservableEmitter<String?> ->
+                    text.onNext(
+                        newText
+                    )
+                }
                 contactListViewModel.filter(observable)
                 return false
             }
@@ -140,4 +151,3 @@ class ContactListFragment : Fragment() {
         const val READ_CONTACTS = 100
     }
 }
-
