@@ -65,7 +65,7 @@ class BroadcastReceiverForNotify : BroadcastReceiver() {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         alarmManager?.set(
             AlarmManager.RTC_WAKEUP,
-            putNextBirthday(intent.getSerializableExtra(CONTACT_BIRTHDAY) as Calendar),
+            putNextBirthday(intent.getSerializableExtra(CONTACT_BIRTHDAY) as Calendar, Calendar.getInstance()).timeInMillis,
             alarmIntent
         )
     }

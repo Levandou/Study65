@@ -24,7 +24,7 @@ class ContactDetailsViewModel @Inject constructor(
     val contact = mutableContact as LiveData<DetailedInformationAboutContact?>
     private val isLoading = MutableLiveData<Boolean>()
     val isLoadingPublic = isLoading as LiveData<Boolean>
-
+    var isAlarmSet = false
     fun getContact(id: Int?) {
 
         id?.let { idAfterLet ->
@@ -43,12 +43,14 @@ class ContactDetailsViewModel @Inject constructor(
         }
     }
 
-    fun offReciver(id:Int){
+    fun offReciver(id: Int) {
+        isAlarmSet = false
         offReminderUseCase.offReminder(id)
     }
 
-    fun onReciver(id:Int,detailedInformationAboutContact: DetailedInformationAboutContact){
-        onReminderUseCase.onReminder(id,detailedInformationAboutContact)
+    fun onReciver(id: Int, detailedInformationAboutContact: DetailedInformationAboutContact) {
+        isAlarmSet = true
+        onReminderUseCase.onReminder(id, detailedInformationAboutContact)
     }
 
     override fun onCleared() {

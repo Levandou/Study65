@@ -158,7 +158,9 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
                     )
                 }
             }
-        else id?.let { contactDetailsViewModel.offReciver(it) }
+        else id?.let {
+            contactDetailsViewModel.offReciver(it)
+        }
     }
 
     override fun onDestroyView() {
