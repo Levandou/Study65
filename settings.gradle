@@ -1,4 +1,4 @@
 include ':app'
 rootProject.name = "65"
 include ':domain'
-include ':libraryy'
+include ':library'

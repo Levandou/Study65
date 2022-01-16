@@ -7,7 +7,6 @@
       <module name="65.application" target="11" />
       <module name="65.core" target="11" />
       <module name="65.library" target="11" />
-      <module name="65.libraryy" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

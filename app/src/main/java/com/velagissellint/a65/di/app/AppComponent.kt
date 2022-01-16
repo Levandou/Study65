@@ -1,7 +1,7 @@
 package com.velagissellint.a65.di.app
 
 import android.app.Application
-import com.example.libraryy.all.containersDi.AppContainer
+import com.velagissellint.a65.all.containersDi.AppContainer
 import com.velagissellint.a65.App
 import com.velagissellint.a65.di.contactDetails.ContactDetailsModelComponent
 import com.velagissellint.a65.di.contactList.ContactListModelComponent

@@ -4,14 +4,9 @@
     package="com.velagissellint.a65">
 
     <application
-        android:name=".App"
+        android:name="com.velagissellint.a65.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.65"/>
-
-
-
+        android:supportsRtl="true" />
 </manifest>

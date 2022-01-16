@@ -1,6 +1,6 @@
 package com.velagissellint.a65.di.contactDetails
 
-import com.example.libraryy.all.containersDi.ContactDetailsContainer
+import com.velagissellint.a65.all.containersDi.ContactDetailsContainer
 import com.velagissellint.a65.ContentResolverModule
 import com.velagissellint.a65.scopes.ContactsDetailsScope
 import dagger.Subcomponent
