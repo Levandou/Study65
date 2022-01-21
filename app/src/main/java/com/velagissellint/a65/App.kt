@@ -1,8 +1,8 @@
 package com.velagissellint.a65
 
 import android.app.Application
-import com.example.libraryy.all.containersDi.AppContainer
-import com.example.libraryy.all.containersDi.ContainerAppContainer
+import com.velagissellint.a65.all.containersDi.AppContainer
+import com.velagissellint.a65.all.containersDi.ContainerAppContainer
 import com.velagissellint.a65.di.app.AppComponent
 import com.velagissellint.a65.di.app.DaggerAppComponent
 
@@ -15,5 +15,4 @@ class App : Application(), ContainerAppContainer {
     }
 
     override fun appContainer(): AppContainer = applicationComponent
-
 }
