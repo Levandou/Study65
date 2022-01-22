@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.ContactsContract
-import com.velagissellint.a65.DetailedInformationAboutContact
 import com.velagissellint.a65.ContactFields
+import com.velagissellint.a65.DetailedInformationAboutContact
 import io.reactivex.rxjava3.core.Single
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -39,7 +39,7 @@ class ContactsRepository @Inject constructor(
                             contentResolver
                         ),
                         id = it.getString(it.getColumnIndex(ContactsContract.Contacts._ID))
-                            .toInt(),
+                            .toInt()
                     )
                 )
             }
@@ -66,7 +66,6 @@ class ContactsRepository @Inject constructor(
                 selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?"
                 columnData = ContactsContract.CommonDataKinds.Phone.PHOTO_URI
                 selectionArgs = arrayOf(id)
-
             }
 
             ContactFields.PHONE -> {
@@ -112,6 +111,7 @@ class ContactsRepository @Inject constructor(
         return meaning.toString()
     }
 
+    @SuppressLint("SimpleDateFormat")
     fun formatterOfBirthday(id: Int): Calendar {
         var birthdayString: String =
             getField(id = id.toString(), ContactFields.BIRTHDAY, contentResolver)
@@ -154,15 +154,14 @@ class ContactsRepository @Inject constructor(
     ): MutableList<DetailedInformationAboutContact> {
         val filteredlist = mutableListOf<DetailedInformationAboutContact>()
         if (list != null) {
-            for (item in list) {
-                if (text?.let { item.fullName.toLowerCase().contains(it.toLowerCase()) } == true)
+            for (item in list)
+                if (text?.let { item.fullName.lowercase().contains(it.lowercase()) } == true)
                     filteredlist.add(item)
-            }
         }
         return filteredlist
     }
 
     companion object {
-        val PATTERN_DATA = "yyyy-MM-dd"
+        const val PATTERN_DATA = "yyyy-MM-dd"
     }
 }

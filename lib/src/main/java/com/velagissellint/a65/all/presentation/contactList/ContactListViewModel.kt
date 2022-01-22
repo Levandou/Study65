@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.velagissellint.a65.all.data.ContactsRepository
 import com.velagissellint.a65.DetailedInformationAboutContact
+import com.velagissellint.a65.all.data.ContactsRepository
 import com.velagissellint.a65.useCase.contactListCase.GetContactListUseCase
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -45,7 +45,7 @@ class ContactListViewModel @Inject constructor(
         }
     }
 
-    fun filter(observable: Observable<String?>?) {
+    fun filter(observable: Observable<String>?) {
         observable?.let {
             it
                 .debounce(DEBOUNCE_TIME, TimeUnit.MILLISECONDS)
@@ -74,7 +74,6 @@ class ContactListViewModel @Inject constructor(
     override fun onCleared() {
         disposable.dispose()
         super.onCleared()
-
     }
 
     companion object {

@@ -5,14 +5,14 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.velagissellint.a65.DetailedInformationAboutContact
+import com.velagissellint.a65.all.data.BroadcastReceiverForNotify
+import com.velagissellint.a65.all.data.ContactsRepository
+import com.velagissellint.a65.all.data.putNextBirthday
 import com.velagissellint.a65.useCase.broadcast.BroadcastRepositoryCase
 import com.velagissellint.a65.useCase.contactDetails.ContactDetailsRepositoryCase
 import com.velagissellint.a65.useCase.contactListCase.ContactListRepositoryCase
-import com.velagissellint.a65.all.data.BroadcastReceiverForNotify
-import com.velagissellint.a65.all.data.ContactsRepository
-import com.velagissellint.a65.putNextBirthday
 import io.reactivex.rxjava3.core.Single
-import java.util.*
+import java.util.Calendar
 
 class RepositoryImpl(
     private val context: Context,
@@ -29,7 +29,7 @@ class RepositoryImpl(
 
     override fun offReminder(id: Int) {
         val intent = Intent(context, BroadcastReceiverForNotify::class.java)
-        val alarmIntent = id?.let {
+        val alarmIntent = id.let {
             PendingIntent.getBroadcast(
                 context,
                 it,
@@ -37,7 +37,7 @@ class RepositoryImpl(
                 PendingIntent.FLAG_CANCEL_CURRENT
             )
         }
-        val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         alarmManager?.cancel(alarmIntent)
         alarmIntent?.cancel()
     }
@@ -50,7 +50,7 @@ class RepositoryImpl(
         intent.putExtra(FULL_NAME, detailedInformationAboutContact.fullName)
         intent.putExtra(CONTACT_BIRTHDAY, detailedInformationAboutContact.birthday)
         intent.putExtra(CONTACT_ID, id)
-        val alarmIntent = id?.let {
+        val alarmIntent = id.let {
             PendingIntent.getBroadcast(
                 context,
                 it,
@@ -58,7 +58,7 @@ class RepositoryImpl(
                 PendingIntent.FLAG_UPDATE_CURRENT
             )
         }
-        val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         alarmManager?.set(
             AlarmManager.RTC_WAKEUP,
             putNextBirthday(

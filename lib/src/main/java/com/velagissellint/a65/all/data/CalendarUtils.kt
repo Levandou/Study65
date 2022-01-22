@@ -1,4 +1,4 @@
-package com.velagissellint.a65
+package com.velagissellint.a65.all.data
 
 import java.util.Calendar
 import java.util.GregorianCalendar
@@ -28,22 +28,24 @@ fun putNextBirthday(calendar: Calendar?, calendarNow: Calendar): Calendar {
             while (!calendarNext.isLeapYear(calendarNext[Calendar.YEAR])) {
                 ++calendarNext[Calendar.YEAR]
             }
-            calendarNext[Calendar.MONTH]=Calendar.FEBRUARY
-            calendarNext[Calendar.DAY_OF_MONTH]=29
+            calendarNext[Calendar.MONTH] = Calendar.FEBRUARY
+            calendarNext[Calendar.DAY_OF_MONTH] = TWENTY_NINE
         } else {
-            calendar[Calendar.MONTH]=Calendar.FEBRUARY
-            calendar[Calendar.DAY_OF_MONTH]=29
+            calendar[Calendar.MONTH] = Calendar.FEBRUARY
+            calendar[Calendar.DAY_OF_MONTH] = TWENTY_NINE
 
             calendarNext[Calendar.YEAR] = currentYear + 1
             while (!calendarNext.isLeapYear(calendarNext[Calendar.YEAR])) {
                 ++calendarNext[Calendar.YEAR]
             }
-            calendarNext[Calendar.MONTH]=Calendar.FEBRUARY
-            calendarNext[Calendar.DAY_OF_MONTH]=29
+            calendarNext[Calendar.MONTH] = Calendar.FEBRUARY
+            calendarNext[Calendar.DAY_OF_MONTH] = TWENTY_NINE
         }
     }
     return calendarNext
 }
 
+const val TWENTY_NINE = 29
+
 private fun isFebruary29(calendar: Calendar) =
-    calendar[Calendar.MONTH] == Calendar.FEBRUARY && calendar[Calendar.DATE] == 29
+    calendar[Calendar.MONTH] == Calendar.FEBRUARY && calendar[Calendar.DATE] == TWENTY_NINE

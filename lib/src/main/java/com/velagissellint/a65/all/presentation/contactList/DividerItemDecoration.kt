@@ -5,7 +5,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.velagissellint.a65.R
+import com.velagissellint.a655.R
 
 class DividerItemDecoration(context: Context?) : RecyclerView.ItemDecoration() {
     private var divider: Drawable? = null

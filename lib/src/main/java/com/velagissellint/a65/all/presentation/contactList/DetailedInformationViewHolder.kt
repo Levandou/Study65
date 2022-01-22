@@ -4,7 +4,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.velagissellint.a65.R
+import com.velagissellint.a655.R
 
 class DetailedInformationViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     val ivPhoto = view.findViewById<ImageView>(R.id.ivPhoto)
