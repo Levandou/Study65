@@ -17,7 +17,8 @@ class GetContactsModule {
     fun getContentResolver(context: Context) = context.contentResolver
 
     @Provides
-    fun getContactRepository(contentResolver: ContentResolver) = ContactsRepository(contentResolver)
+    fun getContactRepository(contentResolver: ContentResolver) =
+        ContactsRepository(contentResolver)
 
     @Provides
     fun provideListRepository(
