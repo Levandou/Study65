@@ -1,6 +1,7 @@
 package tests
 
 import com.velagissellint.a65.DetailedInformationAboutContact
+import com.velagissellint.a65.all.presentation.contactDetails.ContactDetailsViewModel
 import com.velagissellint.a65.useCase.broadcast.BroadcastRepositoryCase
 import com.velagissellint.a65.useCase.broadcast.OffReminderUseCase
 import com.velagissellint.a65.useCase.broadcast.OnReminderUseCase
@@ -12,7 +13,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import java.util.GregorianCalendar
 
-
 class IntegrationTest : DescribeSpec() {
     @MockK
     private lateinit var broadcastRepositoryCase: BroadcastRepositoryCase
@@ -21,18 +21,14 @@ class IntegrationTest : DescribeSpec() {
     lateinit var getContactDetailsUseCase: GetContactDetailsUseCase
     var offReminderUseCase: OffReminderUseCase
     var onReminderUseCase: OnReminderUseCase
-    private var viewmodel: com.velagissellint.a65.all.presentation.contactDetails.ContactDetailsViewModel
+    private var viewmodel: ContactDetailsViewModel
 
     init {
         MockKAnnotations.init(this)
         offReminderUseCase = OffReminderUseCase(broadcastRepositoryCase)
         onReminderUseCase = OnReminderUseCase(broadcastRepositoryCase)
         viewmodel =
-            com.velagissellint.a65.all.presentation.contactDetails.ContactDetailsViewModel(
-                getContactDetailsUseCase,
-                offReminderUseCase,
-                onReminderUseCase
-            )
+            ContactDetailsViewModel(getContactDetailsUseCase, offReminderUseCase, onReminderUseCase)
         describe("Включение и выключение установки напоминания о дне рождения") {
             it("(1)выключение установи напоминания") {
                 val detailedInformationAboutContact = DetailedInformationAboutContact(

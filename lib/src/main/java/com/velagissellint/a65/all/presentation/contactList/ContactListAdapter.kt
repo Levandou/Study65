@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.ListAdapter
 import com.velagissellint.a65.DetailedInformationAboutContact
-import com.velagissellint.a65.R
 import com.velagissellint.a65.all.presentation.contactDetails.ContactDetailsFragment
+import com.velagissellint.a655.R
 
 class ContactListAdapter(private val transaction: FragmentTransaction?) :
     ListAdapter<DetailedInformationAboutContact, DetailedInformationViewHolder>(

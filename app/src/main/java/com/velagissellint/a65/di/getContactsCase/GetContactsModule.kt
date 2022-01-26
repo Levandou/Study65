@@ -2,23 +2,21 @@ package com.velagissellint.a65.di.getContactsCase
 
 import android.content.ContentResolver
 import android.content.Context
+import com.velagissellint.a65.all.RepositoryImpl
+import com.velagissellint.a65.all.data.ContactsRepository
 import com.velagissellint.a65.useCase.broadcast.BroadcastRepositoryCase
 import com.velagissellint.a65.useCase.contactDetails.ContactDetailsRepositoryCase
 import com.velagissellint.a65.useCase.contactListCase.ContactListRepositoryCase
-import com.velagissellint.a65.all.RepositoryImpl
-import com.velagissellint.a65.all.data.ContactsRepository
 import dagger.Module
 import dagger.Provides
 
 @Module
 class GetContactsModule {
-
     @Provides
     fun getContentResolver(context: Context) = context.contentResolver
 
     @Provides
-    fun getContactRepository(contentResolver: ContentResolver) =
-        ContactsRepository(contentResolver)
+    fun getContactRepository(contentResolver: ContentResolver) = ContactsRepository(contentResolver)
 
     @Provides
     fun provideListRepository(

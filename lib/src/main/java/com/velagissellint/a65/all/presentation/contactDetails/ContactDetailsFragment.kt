@@ -23,24 +23,17 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import com.velagissellint.a65.R
 import com.velagissellint.a65.all.containersDi.ContainerAppContainer
 import com.velagissellint.a65.all.data.BroadcastReceiverForNotify
 import com.velagissellint.a65.all.presentation.ViewModelFactory
+import com.velagissellint.a655.R
 import javax.inject.Inject
 
 class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
     @Inject
     lateinit var factory: ViewModelFactory
     lateinit var contactDetailsViewModel: ContactDetailsViewModel
-
     private var id: Int? = null
-    private val PERMISSIONS_REQUEST_READ_CONTACTS = 100
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        (activity?.application as ContainerAppContainer).appContainer()
-            ?.plusPersonDetailsComponent()?.inject(this)
-    }
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private var switchAlarm: Switch? = null
@@ -53,9 +46,12 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        (activity?.application as ContainerAppContainer).appContainer()
+            ?.plusPersonDetailsComponent()?.inject(this)
         activity?.title = getString(R.string.title_for_ContactDetailsFragment)
         (activity as AppCompatActivity?)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         contactDetailsViewModel =
@@ -73,7 +69,7 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
         switchAlarm?.setOnCheckedChangeListener(this)
         observeProgressBar(progressBar)
         val permission =
-            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS);
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS)
         if (permission == PackageManager.PERMISSION_GRANTED) {
             observeViewModel()
         } else {
@@ -158,7 +154,9 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
                     )
                 }
             }
-        else id?.let { contactDetailsViewModel.offReciver(it) }
+        else id?.let {
+            contactDetailsViewModel.offReciver(it)
+        }
     }
 
     override fun onDestroyView() {
@@ -175,6 +173,7 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
 
     companion object {
         private const val ID_ARG = "id"
+        const val PERMISSIONS_REQUEST_READ_CONTACTS = 100
         fun newInstance(id: Int) = ContactDetailsFragment().apply {
             arguments = bundleOf(ID_ARG to id)
         }
