@@ -15,9 +15,7 @@
         tools:ignore="MissingConstraints"
         tools:visibility="visible" />
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:id="@+id/llAllElements"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -81,7 +79,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginTop="10dp"
-                android:layout_weight="5"
+                android:layout_weight="2"
                 android:text="Хороший работник!"
                 android:textSize="25dp" />
 
@@ -89,12 +87,52 @@
                 android:id="@+id/SwitchBirthday"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="3"
+                android:layout_weight="2"
                 android:text="Напоминание о дне рождения"
                 android:textSize="25dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/description"
                 tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="9">
+
+                <fragment
+                    android:id="@+id/mapp"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:context=".MainActivity"
+                    tools:layout_editor_absoluteX="16dp"
+                    tools:layout_editor_absoluteY="144dp" />
+
+                <Button
+                    android:id="@+id/buttonAll"
+                    android:layout_width="61dp"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.6"
+                    android:text="ALL"
+
+                    android:textSize="13.5dp"
+                    app:backgroundTint="#5E5757"
+                    app:layout_constraintStart_toStartOf="@+id/mapp"
+                    app:layout_constraintTop_toTopOf="@+id/mapp" />
+
+                <Button
+                    android:id="@+id/buildDirection"
+                    android:layout_width="61dp"
+                    android:layout_height="0dp"
+                    android:alpha="0.6"
+                    android:text="↑"
+                    android:textSize="25dp"
+                    app:backgroundTint="#5E5757"
+                    app:layout_constraintEnd_toEndOf="@+id/mapp"
+                    app:layout_constraintTop_toTopOf="@+id/mapp" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
         </LinearLayout>
 
     </LinearLayout>

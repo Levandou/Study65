@@ -30,19 +30,17 @@ class ContactListViewModel @Inject constructor(
 
     private fun getContacts() {
 
-        getContactListUseCase.getContacts()?.let { single ->
-            single
-                .subscribeOn(Schedulers.io())
-                .doOnSubscribe { isLoading.postValue(true) }
-                .doFinally { isLoading.postValue(false) }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    mutableContactList.value = it
-                }, {
-                    Log.d("ERRORO", it.message.toString())
-                })
-                .addTo(disposable)
-        }
+        getContactListUseCase.getContacts()
+            ?.subscribeOn(Schedulers.io())
+            ?.doOnSubscribe { isLoading.postValue(true) }
+            ?.doFinally { isLoading.postValue(false) }
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe({
+                mutableContactList.value = it
+            }, {
+                Log.d("ERRORO", it.message.toString())
+            })
+            ?.addTo(disposable)
     }
 
     fun filter(observable: Observable<String>?) {
