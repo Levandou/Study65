@@ -87,6 +87,7 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
         switchAlarm = requireView().findViewById(R.id.SwitchBirthday)
         switchAlarm?.setOnCheckedChangeListener(this)
         observeProgressBar(progressBar)
+        makeDirektion()
         val mapFragment = childFragmentManager.findFragmentById(R.id.mapp) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
@@ -234,7 +235,6 @@ class ContactDetailsFragment : Fragment(), CompoundButton.OnCheckedChangeListene
                     fragmentHelper.latLngToString(listForDirection[0].position),
                     fragmentHelper.latLngToString(listForDirection[1].position)
                 )
-                makeDirektion()
             }
             ++contactDetailsViewModel.howMarkersClickInModeDirections
         } else marker.showInfoWindow()
