@@ -11,6 +11,15 @@ jobs:
       - uses: actions/setup-java@v1
         with: {java-version: 11}
 
+      - name: Touch local properties
+        run: touch local.properties
+
+      - name: Add apiKey
+        run: echo "apiKey=\"\"" >> local.properties
+
+      - name: Add apiKeyYANDEX
+        run: echo "apiKeyYANDEX=\"\"" >> local.properties
+
       - name: Make gradlew executable
         run: chmod +x gradlew
 

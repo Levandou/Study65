@@ -6,6 +6,9 @@ import com.velagissellint.a65.useCase.broadcast.BroadcastRepositoryCase
 import com.velagissellint.a65.useCase.broadcast.OffReminderUseCase
 import com.velagissellint.a65.useCase.broadcast.OnReminderUseCase
 import com.velagissellint.a65.useCase.contactDetails.GetContactDetailsUseCase
+import com.velagissellint.a65.useCase.db.GetFromDbUseCase
+import com.velagissellint.a65.useCase.geo.GetDirectionUseCase
+import com.velagissellint.a65.useCase.geo.GetGeoUseCase
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.MockKAnnotations
@@ -19,6 +22,16 @@ class IntegrationTest : DescribeSpec() {
 
     @MockK
     lateinit var getContactDetailsUseCase: GetContactDetailsUseCase
+
+    @MockK
+    lateinit var geoUseCase: GetGeoUseCase
+
+    @MockK
+    lateinit var getFromDbUseCase: GetFromDbUseCase
+
+    @MockK
+    lateinit var getDirectionUseCase: GetDirectionUseCase
+
     var offReminderUseCase: OffReminderUseCase
     var onReminderUseCase: OnReminderUseCase
     private var viewmodel: ContactDetailsViewModel
@@ -28,7 +41,10 @@ class IntegrationTest : DescribeSpec() {
         offReminderUseCase = OffReminderUseCase(broadcastRepositoryCase)
         onReminderUseCase = OnReminderUseCase(broadcastRepositoryCase)
         viewmodel =
-            ContactDetailsViewModel(getContactDetailsUseCase, offReminderUseCase, onReminderUseCase)
+            ContactDetailsViewModel(
+                getContactDetailsUseCase, offReminderUseCase, onReminderUseCase,
+                geoUseCase, getFromDbUseCase, getDirectionUseCase
+            )
         describe("Включение и выключение установки напоминания о дне рождения") {
             it("(1)выключение установи напоминания") {
                 val detailedInformationAboutContact = DetailedInformationAboutContact(
