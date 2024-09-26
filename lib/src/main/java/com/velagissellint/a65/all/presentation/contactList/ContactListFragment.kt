@@ -19,7 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.velagissellint.a65.all.containersDi.ContainerAppContainer
 import com.velagissellint.a65.all.presentation.ViewModelFactory
@@ -48,7 +48,7 @@ class ContactListFragment : Fragment() {
     ): View? {
         (activity as AppCompatActivity?)?.supportActionBar?.setDisplayHomeAsUpEnabled(false)
         contactListViewModel =
-            ViewModelProviders.of(this, factory).get(ContactListViewModel::class.java)
+            ViewModelProvider(this, factory).get(ContactListViewModel::class.java)
         return inflater.inflate(R.layout.fragment_contact_list, container, false)
     }
 
@@ -96,7 +96,7 @@ class ContactListFragment : Fragment() {
     }
 
     @SuppressLint("UseRequireInsteadOfGet")
-    fun setupRecyclerView(view: View) {
+    private fun setupRecyclerView(view: View) {
         val rvContactList = view.findViewById<RecyclerView>(R.id.rv_pokemon_list)
         rvContactList.addItemDecoration(DividerItemDecoration(activity?.applicationContext))
         adapter = ContactListAdapter(getFragmentTransaction())
@@ -115,9 +115,9 @@ class ContactListFragment : Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             READ_CONTACTS ->
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                     observeViewModel()
-                } else {
+                else {
                     requestPermissions(
                         arrayOf(Manifest.permission.READ_CONTACTS),
                         READ_CONTACTS
